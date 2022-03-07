@@ -4,7 +4,6 @@ version = "0.0.0"
 edition = "2021"
 
 [dependencies]
-guard = "0.5.1"
 
 [dev-dependencies]
 indoc = "1.0.4"

@@ -6,15 +6,8 @@ version = 3
 name = "advent21"
 version = "0.0.0"
 dependencies = [
- "guard",
  "indoc",
 ]
-
-[[package]]
-name = "guard"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff893cc51ea04f8a3b73fbaf4376c06ebc5a0ccbe86d460896f805d9417c93ea"
 
 [[package]]
 name = "indoc"

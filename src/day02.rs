@@ -1,7 +1,6 @@
 // Copyright (c) 2022 Bastiaan Marinus van de Weerd
 
-use std::str::FromStr;
-use guard::guard;
+use std::{str::FromStr, num::ParseIntError};
 
 
 pub(crate) enum CommandDir { Forward, Down, Up }
@@ -64,7 +63,7 @@ pub(crate) enum ParseCommandError {
 	Empty,
 	InvalidFormat(String),
 	InvalidDir(String),
-	InvalidAmount(String),
+	InvalidAmount(ParseIntError),
 }
 
 impl FromStr for CommandDir {
@@ -83,13 +82,13 @@ impl FromStr for Command {
 	type Err = ParseCommandError;
 	fn from_str(s: &str) -> Result<Self, ParseCommandError> {
 		if s.is_empty() || s.trim().is_empty() { return Err(ParseCommandError::Empty); }
-		guard! { let Some((dir, amount)) = s.split_once(char::is_whitespace)
-			else { return Err(ParseCommandError::InvalidFormat(String::from(s))); } }
-		guard! { let Ok(parsed_dir) = dir.parse::<CommandDir>()
-			else { return Err(ParseCommandError::InvalidDir(String::from(dir))); } }
-		guard! { let Ok(parsed_amount) = amount.parse::<u64>()
-			else { return Err(ParseCommandError::InvalidAmount(String::from(amount))); } }
-		Ok(Command(parsed_dir, parsed_amount))
+		let (dir, amount) = s.split_once(char::is_whitespace)
+			.ok_or(ParseCommandError::InvalidFormat(s.to_owned()))?;
+		let dir = dir.parse::<CommandDir>()
+			.map_err(|_| ParseCommandError::InvalidDir(dir.to_owned()))?;
+		let amount = amount.parse::<u64>()
+			.map_err(|e| ParseCommandError::InvalidAmount(e))?;
+		Ok(Command(dir, amount))
 	}
 }
 
