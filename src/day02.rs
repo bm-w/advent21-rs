@@ -60,7 +60,7 @@ pub(crate) fn part2() -> u64 {
 
 
 #[derive(Debug)]
-pub(crate) enum CommandFromStrErr {
+pub(crate) enum ParseCommandError {
 	Empty,
 	InvalidFormat(String),
 	InvalidDir(String),
@@ -80,15 +80,15 @@ impl FromStr for CommandDir {
 }
 
 impl FromStr for Command {
-	type Err = CommandFromStrErr;
-	fn from_str(s: &str) -> Result<Self, CommandFromStrErr> {
-		if s.is_empty() || s.trim().is_empty() { return Err(CommandFromStrErr::Empty); }
+	type Err = ParseCommandError;
+	fn from_str(s: &str) -> Result<Self, ParseCommandError> {
+		if s.is_empty() || s.trim().is_empty() { return Err(ParseCommandError::Empty); }
 		guard! { let Some((dir, amount)) = s.split_once(char::is_whitespace)
-			else { return Err(CommandFromStrErr::InvalidFormat(String::from(s))); } }
+			else { return Err(ParseCommandError::InvalidFormat(String::from(s))); } }
 		guard! { let Ok(parsed_dir) = dir.parse::<CommandDir>()
-			else { return Err(CommandFromStrErr::InvalidDir(String::from(dir))); } }
+			else { return Err(ParseCommandError::InvalidDir(String::from(dir))); } }
 		guard! { let Ok(parsed_amount) = amount.parse::<u64>()
-			else { return Err(CommandFromStrErr::InvalidAmount(String::from(amount))); } }
+			else { return Err(ParseCommandError::InvalidAmount(String::from(amount))); } }
 		Ok(Command(parsed_dir, parsed_amount))
 	}
 }
