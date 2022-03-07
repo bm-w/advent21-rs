@@ -5,9 +5,10 @@ fn input_strs_from_str(s: &str) -> impl Iterator<Item = &str>  {
 	s.lines()
 }
 
-pub(crate) fn input_strs() -> impl Iterator<Item = &'static str> {
+fn input_strs() -> impl Iterator<Item = &'static str>  {
 	input_strs_from_str(include_str!("day03.txt"))
 }
+
 
 fn part1_impl<'a, I, const N: usize>(input_nums: I) -> u64
 where I: Iterator<Item = &'a str> {
@@ -32,9 +33,10 @@ where I: Iterator<Item = &'a str> {
 	gam * eps
 }
 
-pub(crate) fn part1<'a>(input_nums: impl Iterator<Item = &'a str>) -> u64 {
-	part1_impl::<_, 12>(input_nums)
+pub(crate) fn part1() -> u64 {
+	part1_impl::<_, 12>(input_strs())
 }
+
 
 enum Part2Kind { Oxy, Co2 }
 
@@ -77,8 +79,8 @@ where I: Iterator<Item = &'a str> {
 	oxy * co2
 }
 
-pub(crate) fn part2<'a>(input_nums: impl Iterator<Item = &'a str>) -> u64 {
-	part2_impl::<_, 12>(input_nums)
+pub(crate) fn part2() -> u64 {
+	part2_impl::<_, 12>(input_strs_from_str(include_str!("day03.txt")))
 }
 
 

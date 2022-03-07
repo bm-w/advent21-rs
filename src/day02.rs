@@ -12,12 +12,12 @@ fn input_commands_from_str(s: &str) -> impl Iterator<Item = Command> + '_ {
 	s.lines().map(|line| str::parse::<Command>(line).unwrap())
 }
 
-
-pub(crate) fn input_commands() -> impl Iterator<Item = Command> {
+fn input_commands() -> impl Iterator<Item = Command> {
 	input_commands_from_str(include_str!("day02.txt"))
 }
 
-pub(crate) fn part1(input_commands: impl Iterator<Item = Command>) -> u64 {
+
+fn part1_impl(input_commands: impl Iterator<Item = Command>) -> u64 {
 	let mut pos = (0, 0); // Horz., vert.
 	for command in input_commands {
 		use CommandDir::*;
@@ -30,7 +30,12 @@ pub(crate) fn part1(input_commands: impl Iterator<Item = Command>) -> u64 {
 	pos.0 * pos.1
 }
 
-pub(crate) fn part2(input_commands: impl Iterator<Item = Command>) -> u64 {
+pub(crate) fn part1() -> u64 {
+	part1_impl(input_commands())
+}
+
+
+fn part2_impl(input_commands: impl Iterator<Item = Command>) -> u64 {
 	let mut pos = (0, 0); // Horz., vert.
 	let mut aim = 0;
 	for command in input_commands {
@@ -47,6 +52,10 @@ pub(crate) fn part2(input_commands: impl Iterator<Item = Command>) -> u64 {
 		}
 	}
 	pos.0 * pos.1
+}
+
+pub(crate) fn part2() -> u64 {
+	part2_impl(input_commands())
 }
 
 
@@ -95,6 +104,6 @@ fn tests() {
 		down 8
 		forward 2
 	" };
-	assert_eq!(part1(input_commands_from_str(INPUT_COMMANDS)), 150);
-	assert_eq!(part2(input_commands_from_str(INPUT_COMMANDS)), 900);
+	assert_eq!(part1_impl(input_commands_from_str(INPUT_COMMANDS)), 150);
+	assert_eq!(part2_impl(input_commands_from_str(INPUT_COMMANDS)), 900);
 }
