@@ -1,5 +1,7 @@
 // Copyright (c) 2022 Bastiaan Marinus van de Weerd
 
+mod util;
+
 mod day01;
 mod day02;
 mod day03;
