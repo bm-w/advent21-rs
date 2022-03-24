@@ -83,11 +83,11 @@ impl FromStr for Command {
 	fn from_str(s: &str) -> Result<Self, ParseCommandError> {
 		if s.is_empty() || s.trim().is_empty() { return Err(ParseCommandError::Empty); }
 		let (dir, amount) = s.split_once(char::is_whitespace)
-			.ok_or(ParseCommandError::InvalidFormat(s.to_owned()))?;
+			.ok_or_else(|| ParseCommandError::InvalidFormat(s.to_owned()))?;
 		let dir = dir.parse::<CommandDir>()
 			.map_err(|_| ParseCommandError::InvalidDir(dir.to_owned()))?;
 		let amount = amount.parse::<u64>()
-			.map_err(|e| ParseCommandError::InvalidAmount(e))?;
+			.map_err(ParseCommandError::InvalidAmount)?;
 		Ok(Command(dir, amount))
 	}
 }

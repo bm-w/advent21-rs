@@ -180,7 +180,7 @@ impl AddAssign for Number {
 impl Sum for Number {
 	fn sum<I: Iterator<Item = Self>>(mut iter: I) -> Self {
 		let mut l = iter.next().unwrap();
-		while let Some(r) = iter.next() {
+		for r in iter {
 			l += r;
 		}
 		l
@@ -264,15 +264,15 @@ mod parsing {
 			use ParseNumberError::*;
 
 			let mut column = 1;
-			if !s.starts_with("[") {
-				Err(InvalidFormat { column, found: s.chars().next() })?
+			if !s.starts_with('[') {
+				return Err(InvalidFormat { column, found: s.chars().next() })
 			}
 
 			let mut state = vec![None];
 			loop {
 				let inner = match state.last_mut() {
 					Some(found_pair @ None) => {
-						if s.starts_with("[") {
+						if s.starts_with('[') {
 							s = &s[1..];
 							column += 1;
 							*found_pair = Some(None);
@@ -288,7 +288,7 @@ mod parsing {
 						}
 					}
 					Some(Some(Some((_, found_comma @ None)))) => {
-						if !s.starts_with(",") {
+						if !s.starts_with(',') {
 							return Err(MissingPairComma { column, found: s.chars().next() })
 						}
 						s = &s[1..];
@@ -298,7 +298,7 @@ mod parsing {
 						None
 					}
 					Some(inner) => {
-						if !s.starts_with("]") {
+						if !s.starts_with(']') {
 							return Err(MissingPairClosingBracket { column, found: s.chars().next() })
 						}
 						s = &s[1..];
@@ -326,7 +326,7 @@ mod parsing {
 						None => return match inner {
 							InnerNumber::Pair(number) => {
 								if let found @ Some(_) = s.chars().next() {
-									Err(InvalidFormat { column, found })?
+									return Err(InvalidFormat { column, found })
 								}
 								Ok(*number)
 							}
@@ -346,11 +346,11 @@ mod parsing {
 	}
 
 	pub(super) fn numbers_from_str(s: &str) -> Result<Vec<Number>, ParseNumbersError> {
-		Ok(s.lines()
+		s.lines()
 			.enumerate()
 			.map(|(l, line)| line.parse::<Number>()
 				.map_err(|e| ParseNumbersError { line: l + 1, source: e }))
-			.collect::<Result<_, _>>()?)
+			.collect::<Result<_, _>>()
 	}
 
 

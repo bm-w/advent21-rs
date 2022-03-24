@@ -40,7 +40,7 @@ pub(crate) fn part1() -> u64 {
 
 enum Part2Kind { Oxy, Co2 }
 
-fn part2_kind<'a>(n: usize, mut input_nums: Vec<&'a str>, kind: Part2Kind) -> u64 {
+fn part2_kind(n: usize, mut input_nums: Vec<&str>, kind: Part2Kind) -> u64 {
 	let mut count = 0i64;
 
 	for input_num in input_nums.iter() {

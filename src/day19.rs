@@ -32,9 +32,9 @@ mod parsing {
 		type Err = PosError;
 		fn from_str(s: &str) -> Result<Self, Self::Err> {
 			use {PosError::*, Component::*};
-			let (x, yz) = s.split_once(",")
+			let (x, yz) = s.split_once(',')
 				.ok_or(InvalidFormat { column: 1 })?;
-			let (y, z) = yz.split_once(",")
+			let (y, z) = yz.split_once(',')
 				.ok_or(InvalidFormat { column: x.len() + 2 })?;
 			let x = x.parse().map_err(|e| InvalidComponent { component: First, source: e })?;
 			let y = y.parse().map_err(|e| InvalidComponent { component: Second, source: e })?;
@@ -43,7 +43,7 @@ mod parsing {
 		}
 	}
 
-	#[allow(dead_code)]
+	#[allow(dead_code, clippy::enum_variant_names)]
 	#[derive(Debug)]
 	pub(crate) enum ScannerError {
 		InvalidFormat { line: usize, column: usize },
@@ -273,7 +273,7 @@ mod analysis {
 				(PosFromSquareDistanceTos::new(), PosFromSquareDistanceTos::new()),
 				|mut psqdd, (&sqd, &(ftt0, ftt1))| {
 					for (from0, to0) in ftt0.iter().flat_map(|(f0, t0)| [(f0, t0), (t0, f0)].into_iter()) {
-						psqdd.0.entry(&from0).or_default().push((sqd, to0));
+						psqdd.0.entry(from0).or_default().push((sqd, to0));
 					}
 					for (from1, to1) in ftt1.iter().flat_map(|(f1, t1)| [(f1, t1), (t1, f1)].into_iter()) {
 						psqdd.1.entry(from1).or_default().push((sqd, to1));
@@ -303,15 +303,14 @@ mod analysis {
 							.map(move |beacon1| (beacon, beacon1)))
 					.cartesian_product(geometry::Orientation::all())
 					.map(|((beacon0, beacon1), orientation)|
-						geometry::Transform::from((beacon1, &orientation), &beacon0))
-					.filter(|transform| {
+						geometry::Transform::from((beacon1, &orientation), beacon0))
+					.find(|transform| {
 						from_sqd_tos1.keys()
 							.map(|beacon1| transform * *beacon1)
 							.filter(|beacon1in0| from_sqd_tos0.contains_key(beacon1in0))
 							.take(OVERLAP_COUNT)
 							.count() == OVERLAP_COUNT
 					})
-					.next()
 			})
 		}
 
@@ -589,13 +588,13 @@ mod analysis {
 	}
 
 
-	pub(super) fn match_scanners(scanners: &Vec<Scanner>, mut f: impl FnMut(&Scanner, &geometry::Transform)) {
+	pub(super) fn match_scanners(scanners: &[Scanner], mut f: impl FnMut(&Scanner, &geometry::Transform)) {
 		let transforms = {
-			let ass = scanners.iter().map(|s| AnalyzedScanner::from(s)).collect::<Vec<_>>();
+			let ass = scanners.iter().map(AnalyzedScanner::from).collect::<Vec<_>>();
 			ass.iter()
 				.tuple_combinations()
 				.filter_map(|(as0, as1)|
-					ScannersComparison::new((&as0, &as1))
+					ScannersComparison::new((as0, as1))
 						.matched_transform()
 						.map(|t| (as0.scanner, as1.scanner, t)))
 				.flat_map(|(s0, s1, t)| [

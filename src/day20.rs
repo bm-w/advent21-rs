@@ -101,7 +101,7 @@ mod parsing {
 		s.chars().enumerate().map(|(c, chr)| match chr {
 			'#' => Ok(true),
 			'.' => Ok(false),
-			b => Err(BitsError { column: c + 1, found: char::from(b) })
+			b => Err(BitsError { column: c + 1, found: b })
 		})
 	}
 
@@ -127,7 +127,7 @@ mod parsing {
 		}
 	}
 	
-	#[allow(dead_code)]
+	#[allow(dead_code, clippy::enum_variant_names)]
 	#[derive(Debug)]
 	pub(super) enum ImageError {
 		InvalidFormat,
@@ -159,7 +159,7 @@ mod parsing {
 		}
 	}
 
-	#[allow(dead_code)]
+	#[allow(dead_code, clippy::enum_variant_names)]
 	#[derive(Debug)]
 	pub(super) enum MapError {
 		InvalidFormat { line: usize },
@@ -175,13 +175,13 @@ mod parsing {
 
 			let enhancement_algorithm = lines.next()
 				.map(|line| line.parse()
-					.map_err(|e| InvalidEnhancementAlgorithm(e)))
+					.map_err(InvalidEnhancementAlgorithm))
 				.unwrap_or(Err(InvalidFormat { line: 1 }))?;
 
 			if lines.next() != Some("") { return Err(InvalidFormat { line: 2 }) }
 
 			let input_image = (3, lines).try_into()
-				.map_err(|e| InvalidImage(e))?;
+				.map_err(InvalidImage)?;
 
 			Ok(Map { enhancement_algorithm, input_image, step: 0 })
 		}

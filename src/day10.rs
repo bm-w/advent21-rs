@@ -64,7 +64,7 @@ fn part2_impl<'a>(input_lines: impl Iterator<Item = &'a str>) -> u64 {
 		}
 		Some(stack.iter().rev().fold(0,|s, k| s * 5 + k.scores().1))
 	}).collect::<Vec<_>>();
-	scores.sort();
+	scores.sort_unstable();
 	scores[scores.len() / 2]
 }
 

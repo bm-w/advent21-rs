@@ -108,10 +108,10 @@ impl FromStr for Pos {
 	type Err = ParsePosError;
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		use ParsePosError::*;
-		let (x, y) = s.split_once(",")
-			.ok_or(InvalidFormat(s.to_owned()))?;
-		let x = x.parse().map_err(|e| InvalidX(e))?;
-		let y = y.parse().map_err(|e| InvalidY(e))?;
+		let (x, y) = s.split_once(',')
+			.ok_or_else(|| InvalidFormat(s.to_owned()))?;
+		let x = x.parse().map_err(InvalidX)?;
+		let y = y.parse().map_err(InvalidY)?;
 		Ok(Pos { x, y })
 	}
 }
@@ -130,6 +130,7 @@ impl FromStr for FoldAxis {
 	}
 }
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug)]
 enum ParseFoldInstrError {
 	InvalidFormat(String),
@@ -144,12 +145,12 @@ impl FromStr for FoldInstr {
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		use ParseFoldInstrError::*;
 		let (axis, pos) = if s.starts_with(FOLD_INSTR_PREFIX)  {
-			s[FOLD_INSTR_PREFIX.len()..].split_once('=')
+			s.strip_prefix(FOLD_INSTR_PREFIX).and_then(|s| s.split_once('='))
 		} else {
 			None
-		}.ok_or(InvalidFormat(s.to_owned()))?;
-		let axis = axis.parse().map_err(|e| InvalidAxis(e))?;
-		let pos = pos.parse().map_err(|e| InvalidAmount(e))?;
+		}.ok_or_else(|| InvalidFormat(s.to_owned()))?;
+		let axis = axis.parse().map_err(InvalidAxis)?;
+		let pos = pos.parse().map_err(InvalidAmount)?;
 		Ok(FoldInstr(axis, pos))
 	}
 }

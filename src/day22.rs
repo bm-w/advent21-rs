@@ -34,7 +34,7 @@ impl Intersection for [RangeInclusive<i32>; 3] {
 		let mut it = Iterator::zip(self.iter(), other.iter())
 			.map(|(s, o)| s.intersection(o))
 			.take_while(|r| r.is_some())
-			.filter_map(|r| r);
+			.flatten();
 		// TODO(bm-w): Collect into array (`util::cast` doesn’t work because of `Default` bound…)?
 		if let (Some(r0), Some(r1), Some(r2)) = (it.next(), it.next(), it.next()) { Some([r0, r1, r2]) }
 		else { None }
@@ -137,7 +137,7 @@ mod parsing {
 		let (from, through) = s.split_once("..")
 			.ok_or(InvalidFormat)?;
 		let through_column = from.len() + 3;
-		let from = from.parse().map_err(|e| InvalidFrom(e))?;
+		let from = from.parse().map_err(InvalidFrom)?;
 		let through = through.parse().map_err(|e| InvalidThrough { column: through_column, source: e })?;
 		if through < from { return Err(Inverted) }
 		Ok(from..=through)
@@ -150,7 +150,7 @@ mod parsing {
 		InvalidRange(RangeError),
 	}
 
-	#[allow(dead_code)]
+	#[allow(dead_code, clippy::enum_variant_names)]
 	#[derive(Debug)]
 	pub(super) enum StepError {
 		InvalidFormat { column: usize },
@@ -171,7 +171,7 @@ mod parsing {
 				on => Err(InvalidOn { found: on.to_owned() }),
 			}?;
 
-			let [x, y, z]: [&str; 3] = cuboid.split(",").cast()
+			let [x, y, z]: [&str; 3] = cuboid.split(',').cast()
 				.map_err(|_| InvalidFormat { column: cuboid_column })?;
 			let y_column = cuboid_column + x.len() + 1;
 			let z_column = y_column + y.len() + 1;

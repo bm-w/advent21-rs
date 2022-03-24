@@ -110,6 +110,7 @@ impl<'a> From<&'a str> for Template<'a> {
 	}
 }
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug)]
 enum ParseInsertRuleError {
 	InvalidFormat(String),
@@ -122,7 +123,7 @@ impl FromStr for InsertRule {
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		use ParseInsertRuleError::*;
 		let (between, insert) = s.split_once("->")
-			.ok_or(InvalidFormat(s.to_owned()))?;
+			.ok_or_else(|| InvalidFormat(s.to_owned()))?;
 		let (between, insert) = (between.trim().as_bytes(), insert.trim().as_bytes());
 		if between.len() != 2 { return Err(InvalidBetween(between.len())) }
 		if insert.len() != 1 { return Err(InvalidInsert(insert.len())) }

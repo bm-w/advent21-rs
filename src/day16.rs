@@ -255,14 +255,14 @@ mod parsing {
 					else { Err(TrailingNonZeroBit { column: c }) }))
 				.find(|r| r.is_err())
 				.transpose()?;
-			return Ok(packet)
+			Ok(packet)
 		}
 	}
 }
 
 impl FromStr for Packet {
 	type Err = ParsePacketError;
-	fn from_str<'a>(s: &'a str) -> Result<Self, Self::Err> {
+	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		s.try_into()
 	}
 }

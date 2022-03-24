@@ -19,7 +19,7 @@ fn input_entries_from_str(s: &str) -> impl Iterator<Item = ([&str; 10], [&str; 4
 				}
 			} )
 		})
-		.filter_map(|e| e)
+		.flatten()
 		.map(|(s, o)| (
 			s.trim().split_whitespace().cast().unwrap(),
 			o.trim().split_whitespace().cast().unwrap(),
@@ -76,11 +76,11 @@ fn part2_impl<'a>(input_entries: impl Iterator<Item = ([&'a str; 10], [&'a str; 
 				[(&all_sets[four_idx], 2), (&all_sets[seven_idx], 3)]
 					.into_iter().map(|(s, n)|
 						*len5_idxs.iter().find(|i|
-							all_sets[**i].intersection(&s).count() == n).unwrap())
+							all_sets[**i].intersection(s).count() == n).unwrap())
 					.cast().unwrap();
 			let five_idx = len5_idxs.into_iter()
-				.filter(|&i| i != two_idx && i != three_idx)
-				.next().unwrap();
+				.find(|&i| i != two_idx && i != three_idx)
+				.unwrap();
 			(two_idx, three_idx, five_idx)
 		};
 
@@ -94,11 +94,11 @@ fn part2_impl<'a>(input_entries: impl Iterator<Item = ([&'a str; 10], [&'a str; 
 				[(&all_sets[seven_idx], 2), (&all_sets[four_idx], 4)]
 					.into_iter().map(|(s, n)|
 						*len6_idxs.iter().find(|i|
-							all_sets[**i].intersection(&s).count() == n).unwrap())
+							all_sets[**i].intersection(s).count() == n).unwrap())
 					.cast().unwrap();
 			let zero_idx = len6_idxs.into_iter()
-				.filter(|&i| i != six_idx && i != nine_idx)
-				.next().unwrap();
+				.find(|&i| i != six_idx && i != nine_idx)
+				.unwrap();
 			(zero_idx, six_idx, nine_idx)
 		};
 

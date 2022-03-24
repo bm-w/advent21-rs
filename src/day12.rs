@@ -64,13 +64,13 @@ fn input_caves() -> Caves<'static> {
 type OtherCavesFn = for<'result, 'inner> fn(
 	&'result Caves<'result>,
 	&'inner Cave<'result>,
-	&'inner Vec<(Vec<&'result Cave<'result>>, usize)>
+	&'inner [(Vec<&'result Cave<'result>>, usize)]
 ) -> Vec<&'result Cave<'result>>;
 
 fn part1and2_other_caves<'inner, 'result>(
 	input_caves: &'result Caves<'result>,
 	cave: &'inner Cave<'result>,
-	path: &'inner Vec<(Vec<&'result Cave<'result>>, usize)>,
+	path: &'inner [(Vec<&'result Cave<'result>>, usize)],
 	always_allow_small_cave: bool,
 ) -> Vec<&'result Cave<'result>> {
 	input_caves.caves[cave]
@@ -86,7 +86,7 @@ fn part1and2_other_caves<'inner, 'result>(
 fn part1_other_caves<'inner, 'result>(
 	input_caves: &'result Caves<'result>,
 	cave: &'inner Cave<'result>,
-	path: &'inner Vec<(Vec<&'result Cave<'result>>, usize)>
+	path: &'inner [(Vec<&'result Cave<'result>>, usize)]
 ) -> Vec<&'result Cave<'result>> {
 	part1and2_other_caves(input_caves, cave, path, false)
 }
@@ -94,7 +94,7 @@ fn part1_other_caves<'inner, 'result>(
 fn part2_other_caves<'inner, 'result>(
 	input_caves: &'result Caves<'result>,
 	cave: &'inner Cave<'result>,
-	path: &'inner Vec<(Vec<&'result Cave<'result>>, usize)>
+	path: &'inner [(Vec<&'result Cave<'result>>, usize)],
 ) -> Vec<&'result Cave<'result>> {
 	part1and2_other_caves(input_caves, cave, path, {
 		let path_small_caves = path.iter()
@@ -105,7 +105,7 @@ fn part2_other_caves<'inner, 'result>(
 	})
 }
 
-fn part1and2_impl<'a, 'b>(input_caves: Caves<'a>, other_caves_fn: OtherCavesFn) -> usize {
+fn part1and2_impl(input_caves: Caves, other_caves_fn: OtherCavesFn) -> usize {
 	let mut paths = 0;
 	let mut path = vec![(vec![&Cave::Start], 0)];
 	loop {
@@ -137,7 +137,7 @@ fn part1and2_impl<'a, 'b>(input_caves: Caves<'a>, other_caves_fn: OtherCavesFn) 
 	paths
 }
 
-fn part1_impl<'a>(input_caves: Caves<'a>) -> usize {
+fn part1_impl(input_caves: Caves) -> usize {
 	part1and2_impl(input_caves, part1_other_caves)
 }
 
@@ -145,7 +145,7 @@ pub(crate) fn part1() -> usize {
 	part1_impl(input_caves())
 }
 
-fn part2_impl<'a>(input_caves: Caves<'a>) -> usize {
+fn part2_impl(input_caves: Caves) -> usize {
 	part1and2_impl(input_caves, part2_other_caves)
 }
 
@@ -173,6 +173,7 @@ impl<'a> TryFrom<&'a str> for Cave<'a> {
 	}
 }
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug)]
 enum ParseConnError<'a> {
 	InvalidFormat(&'a str),
@@ -187,9 +188,9 @@ impl<'a> TryFrom<&'a str> for Conn<'a> {
 		let (from, to) = s.split_once('-')
 			.ok_or(InvalidFormat(s))?;
 		let from = Cave::try_from(from)
-			.map_err(|e| InvalidFrom(e))?;
+			.map_err(InvalidFrom)?;
 		let to = Cave::try_from(to)
-			.map_err(|e| InvalidTo(e))?;
+			.map_err(InvalidTo)?;
 		Ok(Conn(from, to))
 	}
 }

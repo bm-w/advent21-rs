@@ -57,7 +57,7 @@ impl Grid {
 	}
 
 	fn existing_adjacent_cells(&self, idx: usize, extended: bool) -> impl Iterator<Item = (usize, u8)> {
-		self.adjacent_cells(idx, extended).into_iter().filter_map(|c| c)
+		self.adjacent_cells(idx, extended).into_iter().flatten()
 	}
 }
 
@@ -85,7 +85,7 @@ fn part1_impl(input_grid: Grid, extended: bool) -> u64 {
 
 	impl PartialOrd for State {
 		fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-			Some(self.cmp(&other))
+			Some(self.cmp(other))
 		}
 	}
 
@@ -123,7 +123,7 @@ pub(crate) fn part2() -> u64 {
 }
 
 
-#[allow(dead_code)]
+#[allow(dead_code, clippy::enum_variant_names)]
 #[derive(Debug)]
 enum ParseGridError {
 	InvalidFormat { line: usize },

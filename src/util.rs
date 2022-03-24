@@ -20,10 +20,10 @@ pub(crate) mod cast {
 			// TODO(bm-w): Unsafely use uninitialized memory to avoid `Default` bound?
 			let mut out: U = U::default();
 			let arr: &mut [T] = out.as_mut();
-			for i in 0..arr.len() {
+			for (i, elt) in arr.iter_mut().enumerate() {
 				match self.next() {
 					None => { return Err(CastError::NotFilled(i)); }
-					Some(v) => { arr[i] = v; }
+					Some(v) => { *elt = v; }
 				}
 			}
 			if self.next().is_some() {

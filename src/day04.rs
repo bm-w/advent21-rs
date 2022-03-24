@@ -74,7 +74,7 @@ fn part2_impl(game: Game) -> u64 {
 				if boards_marked[k][i] == 5 || boards_marked[k][5 + j] == 5 {
 					board_scores[k] = num * board_rem_sums[k];
 
-					if board_scores.iter().filter(|score| **score == 0).next() == None {
+					if !board_scores.iter().any(|score| *score == 0) {
 						return board_scores[k];
 					}
 				}
@@ -118,7 +118,7 @@ impl FromStr for Game {
 		while let Some(blank_line) = lines.next() {
 			let k = boards.len();
 
-			if blank_line != "" {
+			if !blank_line.is_empty() {
 				return Err(ParseGameError::InvalidBoardSeparator { k, found: String::from(blank_line) });
 			}
 

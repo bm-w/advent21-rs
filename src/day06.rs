@@ -25,9 +25,7 @@ fn part1_brute(lanternfishes: impl Iterator<Item = u8>, n: usize) -> usize {
 				*lanternfish -= 1;
 			}
 		}
-		for _ in 0..new_count {
-			lanternfishes.push(8);
-		}
+		lanternfishes.extend(std::iter::repeat(8).take(new_count));
 	}
 	lanternfishes.len()
 }

@@ -33,7 +33,7 @@ impl Grid {
 	}
 
 	fn existing_adjacent_cells(&self, idx: usize) -> impl Iterator<Item = (usize, u8)> {
-		self.adjacent_cells(idx).into_iter().filter_map(|c| c)
+		self.adjacent_cells(idx).into_iter().flatten()
 	}
 
 	/// Returns whether the octopus in the cell will flash.
@@ -100,7 +100,7 @@ pub(crate) fn part2() -> usize {
 }
 
 
-#[allow(dead_code)]
+#[allow(dead_code, clippy::enum_variant_names)]
 #[derive(Debug)]
 pub(crate) enum ParseGridError {
 	InvalidFormat { found_lines: usize },

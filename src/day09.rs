@@ -21,7 +21,7 @@ impl Grid {
 	}
 
 	fn existing_adjacent_cells(&self, idx: usize) -> impl Iterator<Item = (usize, u8)> {
-		self.adjacent_cells(idx).into_iter().filter_map(|c| c) 
+		self.adjacent_cells(idx).into_iter().flatten()
 	}
 
 	/// Returns the cell’s height if it’s a low point.
@@ -89,7 +89,7 @@ pub(crate) fn part1() -> u64 {
 fn part2_impl(grid: Grid) -> usize {
 	let mut basins = grid.basins().collect::<Vec<_>>();
 	basins.sort_by(|l, r| l.1.cmp(&r.1));
-	basins[basins.len() - 3..].into_iter().map(|(_, s)| s).product()
+	basins[basins.len() - 3..].iter().map(|(_, s)| s).product()
 }
 
 pub(crate) fn part2() -> usize {

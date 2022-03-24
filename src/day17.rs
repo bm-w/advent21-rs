@@ -50,7 +50,7 @@ impl TargetArea {
 
 	fn may_still_be_hit1(r: &RangeInclusive<i32>, pos: i32, velocity: i32, velocity_may_still_become_negative: bool) -> bool {
 		match velocity {
-			0 if !r.contains(&pos) => velocity_may_still_become_negative || false,
+			0 if !r.contains(&pos) => velocity_may_still_become_negative,
 			1.. => velocity_may_still_become_negative || pos < *r.end(),
 			vx if vx < 0 => pos > *r.start(), // TODO(bm-w): `..-1` once half-open ranges are stable
 			_ => true,
@@ -126,6 +126,7 @@ pub(crate) fn part2() -> usize {
 }
 
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug)]
 enum ParseRangeInclusiveError {
 	InvalidFormat,
@@ -137,8 +138,8 @@ fn range_incl_from_str(s: &str) -> Result<RangeInclusive<i32>, ParseRangeInclusi
 	use ParseRangeInclusiveError::*;
 	let (from, through) = s.split_once("..")
 		.ok_or(InvalidFormat)?;
-	let from = from.parse().map_err(|e| InvalidFrom(e))?;
-	let through = through.parse().map_err(|e| InvalidThrough(e))?;
+	let from = from.parse().map_err(InvalidFrom)?;
+	let through = through.parse().map_err(InvalidThrough)?;
 	Ok(from..=through)
 }
 
@@ -153,15 +154,14 @@ enum ParseTargetAreaError {
 }
 
 fn try_skip_prefix<'a>(s: &'a str, prefix: &str) -> Result<&'a str, usize> {
-	if s.starts_with(prefix) {
-		Ok(&s[prefix.len()..])
+	if let Some(remaining) = s.strip_prefix(prefix) {
+		Ok(remaining)
 	} else {
-		let c = s.chars().zip(prefix.chars())
+		Err(s.chars().zip(prefix.chars())
 			.enumerate()
 			.find(|(_, (l, r))| l != r)
 			.map(|(c, _)| c)
-			.unwrap_or(0);
-		return Err(c)
+			.unwrap_or(0))
 	}
 }
 

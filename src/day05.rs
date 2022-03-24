@@ -90,16 +90,17 @@ pub(crate) enum ParsePosError {
 impl FromStr for Pos {
 	type Err = ParsePosError;
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		let (x, y) = s.trim().split_once(",")
-			.ok_or(ParsePosError::InvalidFormat(s.to_owned()))?;
+		let (x, y) = s.trim().split_once(',')
+			.ok_or_else(|| ParsePosError::InvalidFormat(s.to_owned()))?;
 		let x = u16::from_str(x)
-			.map_err(|e| ParsePosError::InvalidX(e))?;
+			.map_err(ParsePosError::InvalidX)?;
 		let y = u16::from_str(y)
-			.map_err(|e| ParsePosError::InvalidY(e))?;
+			.map_err(ParsePosError::InvalidY)?;
 		Ok(Pos { x, y })
 	}
 }
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug)]
 pub(crate) enum ParseLineError {
 	InvalidFormat(String),
@@ -111,11 +112,11 @@ impl FromStr for Line {
 	type Err = ParseLineError;
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		let (start, end) = s.split_once("->")
-			.ok_or(ParseLineError::InvalidFormat(s.to_owned()))?;
+			.ok_or_else(|| ParseLineError::InvalidFormat(s.to_owned()))?;
 		let start = Pos::from_str(start)
-			.map_err(|e| ParseLineError::InvalidStart(e))?;
+			.map_err(ParseLineError::InvalidStart)?;
 		let end = Pos::from_str(end)
-			.map_err(|e| ParseLineError::InvalidEnd(e))?;
+			.map_err(ParseLineError::InvalidEnd)?;
 		Ok(Line { start, end })
 	}
 }

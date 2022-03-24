@@ -160,7 +160,7 @@ mod parsing {
 		Invalid(T),
 	}
 
-	#[allow(dead_code)]
+	#[allow(dead_code, clippy::enum_variant_names)]
 	#[derive(Debug)]
 	pub(super) enum PlayerError {
 		InvalidFormat { column: usize },
@@ -196,7 +196,7 @@ mod parsing {
 			}
 			let starting_position = s[starting_position_start..].parse()
 				.map_err(|e| InvalidStartingPosition { column: starting_position_start + 1, source: IntError::Parsing(e) })?;
-			if starting_position < 1 || starting_position > 10 {
+			if !(1..=10).contains(&starting_position) {
 				return Err(InvalidStartingPosition { column: starting_position_start + 1, source: IntError::Invalid(starting_position) })
 			}
 
